@@ -1,0 +1,6 @@
+[user]
+	email = j.zhao2k19@gmail.com
+[pull]
+	rebase = false
+[push]
+	default = current
