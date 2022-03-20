@@ -12,6 +12,7 @@ lvim.log.level = "warn"
 lvim.format_on_save = true
 lvim.colorscheme = "onenord"
 lvim.builtin.lualine.options.theme = "onenord"
+lvim.builtin.lualine.sections.lualine_b = {'branch'}
 
 -- keymappings [view all the defaults by pressing <leader>Lk]
 lvim.leader = "space"
@@ -93,10 +94,12 @@ lvim.builtin.treesitter.highlight.enabled = true
 -- ---@usage Select which servers should be configured manually. Requires `:LvimCacheRest` to take effect.
 -- See the full default list `:lua print(vim.inspect(lvim.lsp.override))`
 -- vim.list_extend(lvim.lsp.override, { "pyright" })
+vim.list_extend(lvim.lsp.override, { "rust_analyzer"  })
 
 -- ---@usage setup a server -- see: https://www.lunarvim.org/languages/#overriding-the-default-configuration
 -- local opts = {} -- check the lspconfig documentation for a list of all possible options
 -- require("lvim.lsp.manager").setup("pylsp", opts)
+require("lvim.lsp.manager").setup("jedi_language_server", {})
 
 -- you can set a custom on_attach function that will be used for all the language servers
 -- See <https://github.com/neovim/nvim-lspconfig#keybindings-and-completion>
@@ -139,21 +142,16 @@ lvim.builtin.treesitter.highlight.enabled = true
 -- }
 
 -- -- set additional linters
--- local linters = require "lvim.lsp.null-ls.linters"
--- linters.setup {
---   { exe = "flake8", filetypes = { "python" } },
---   {
---     exe = "shellcheck",
---     ---@usage arguments to pass to the formatter
---     -- these cannot contain whitespaces, options such as `--line-width 80` become either `{'--line-width', '80'}` or `{'--line-width=80'}`
---     args = { "--severity", "warning" },
---   },
---   {
---     exe = "codespell",
---     ---@usage specify which filetypes to enable. By default a providers will attach to all the filetypes it supports.
---     filetypes = { "javascript", "python" },
---   },
--- }
+local linters = require "lvim.lsp.null-ls.linters"
+linters.setup {
+  { exe = "flake8", filetypes = { "python" } },
+  {
+    exe = "shellcheck",
+    ---@usage arguments to pass to the formatter
+    -- these cannot contain whitespaces, options such as `--line-width 80` become either `{'--line-width', '80'}` or `{'--line-width=80'}`
+    args = { "--severity", "warning" },
+  }
+}
 
 -- Additional Plugins
 lvim.plugins = {
@@ -209,6 +207,10 @@ lvim.plugins = {
     end,
   },
   {
+    "danilamihailov/beacon.nvim",
+    config = function() end,
+  },
+  {
     "norcalli/nvim-colorizer.lua",
     config = function()
       require("colorizer").setup({ "*" }, {
@@ -248,15 +250,56 @@ lvim.plugins = {
   {
     "ray-x/lsp_signature.nvim",
     config = function ()
-      require("lsp_signature").setup()
+      require("lsp_signature").setup({
+        hint_prefix = "hint: ",
+        floating_window = false
+      })
     end,
-  }
+  },
+  {
+    "simrat39/rust-tools.nvim",
+    config = function()
+      require("rust-tools").setup({
+        tools = {
+          autoSetHints = true,
+          hover_with_actions = true,
+          runnables = {
+            use_telescope = true,
+          },
+          inlay_hints = {
+            show_variable_name = true,
+            show_parameter_hints = true,
+            parameter_hints_prefix = "params:",
+            other_hints_prefix = "-> ",
+            max_len_align = true
+          }
+        },
+        server = {
+          cmd = { vim.fn.stdpath "data" .. "/lsp_servers/rust/rust-analyzer" },
+          on_attach = require("lvim.lsp").common_on_attach,
+          on_init = require("lvim.lsp").common_on_init,
+        },
+        })
+    end,
+    ft = { "rust", "rs" },
+  },
+  {
+    "xiyaowong/nvim-transparent",
+    config = function()
+      require("transparent").setup({
+        enable = true
+      })
+    end,
+  },
+  { "weilbith/nvim-code-action-menu" }
 }
 
 -- Autocommands (https://neovim.io/doc/user/autocmd.html)
 lvim.autocommands.custom_groups = {
   {"BufEnter,FocusGained,InsertLeave,WinEnter", "*", "if &nu && mode() != \"i\" | set rnu   | endif"},
   {"BufLeave,FocusLost,InsertEnter,WinLeave", "*", "if &nu                      | set nornu | endif"},
+  {"FileReadPost", "*", "RustSetInlayHints"}
 }
 
 vim.opt.number = true
+
