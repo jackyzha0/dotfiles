@@ -12,7 +12,6 @@ lvim.log.level = "warn"
 lvim.format_on_save = true
 lvim.colorscheme = "onenord"
 lvim.builtin.lualine.options.theme = "onenord"
-lvim.builtin.lualine.sections.lualine_b = {'branch'}
 
 -- keymappings [view all the defaults by pressing <leader>Lk]
 lvim.leader = "space"
@@ -29,6 +28,8 @@ lvim.keys.normal_mode["<leader>xw"] = "<cmd>TroubleToggle lsp_workspace_diagnost
 lvim.keys.normal_mode["<leader>xd"] = "<cmd>TroubleToggle lsp_document_diagnostics<cr>"
 lvim.keys.normal_mode["<leader>xq"] = "<cmd>TroubleToggle quickfix<cr>"
 lvim.keys.normal_mode["<leader>xl"] = "<cmd>TroubleToggle loclist<cr>"
+lvim.keys.normal_mode["<leader>xk"] = "<cmd>lua vim.diagnostic.open_float(0, { scope = \"line\", border = \"single\" })<CR>"
+
 
 lvim.builtin.dashboard.custom_header = {
   "                                                                                ## #                   ",
@@ -38,7 +39,7 @@ lvim.builtin.dashboard.custom_header = {
   " /|\\ /|\\  /|\\ /|\\       /|\\ /|\\   /|\\ /|\\  /|\\ /|\\    /|\\/|\\   /|\\        /.\\__\\        /|\\/|\\  /|\\ /|\\",
   " .|  #|.. .|& /|\\        | #&|.   .|  #|.. .|& /|\\     | #|.   /|\\        |O | |        .| #|.. .|& /|\\",
 }
-lvim.builtin.dashboard.footer = "It's a magical world, Hobbes, ol' buddy...let's go exploring!"
+lvim.builtin.dashboard.footer = ""
 -- unmap a default keymapping
 -- lvim.keys.normal_mode["<C-Up>"] = ""
 -- edit a default keymapping
@@ -76,7 +77,7 @@ lvim.builtin.dashboard.footer = "It's a magical world, Hobbes, ol' buddy...let's
 
 -- After changing plugin config exit and reopen LunarVim, Run :PackerInstall :PackerCompile
 lvim.builtin.dashboard.active = true
-lvim.builtin.terminal.active = true
+lvim.builtin.terminal.active = false
 lvim.builtin.nvimtree.setup.view.side = "left"
 lvim.builtin.nvimtree.show_icons.git = true
 lvim.builtin.nvimtree.setup.view.width = 20
@@ -142,16 +143,10 @@ require("lvim.lsp.manager").setup("jedi_language_server", {})
 -- }
 
 -- -- set additional linters
-local linters = require "lvim.lsp.null-ls.linters"
-linters.setup {
-  { exe = "flake8", filetypes = { "python" } },
-  {
-    exe = "shellcheck",
-    ---@usage arguments to pass to the formatter
-    -- these cannot contain whitespaces, options such as `--line-width 80` become either `{'--line-width', '80'}` or `{'--line-width=80'}`
-    args = { "--severity", "warning" },
-  }
-}
+-- local linters = require "lvim.lsp.null-ls.linters"
+-- linters.setup {
+--   { exe = "flake8", filetypes = { "python" } }
+-- }
 
 -- Additional Plugins
 lvim.plugins = {
@@ -202,9 +197,9 @@ lvim.plugins = {
   },
   {
     "rmehri01/onenord.nvim",
-    config = function()
-      require("onenord").setup()
-    end,
+    config = function ()
+      require('onenord').setup()
+    end, 
   },
   {
     "danilamihailov/beacon.nvim",
@@ -219,7 +214,7 @@ lvim.plugins = {
           RRGGBBAA = true, -- #RRGGBBAA hex codes
           rgb_fn = true, -- CSS rgb() and rgba() functions
           hsl_fn = true, -- CSS hsl() and hsla() functions
-          css = true, -- Enable all CSS features: rgb_fn, hsl_fn, names, RGB, RRGGBB
+          css = false, -- Enable all CSS features: rgb_fn, hsl_fn, names, RGB, RRGGBB
           css_fn = true, -- Enable all CSS *functions*: rgb_fn, hsl_fn
           })
     end,
@@ -298,8 +293,10 @@ lvim.plugins = {
 lvim.autocommands.custom_groups = {
   {"BufEnter,FocusGained,InsertLeave,WinEnter", "*", "if &nu && mode() != \"i\" | set rnu   | endif"},
   {"BufLeave,FocusLost,InsertEnter,WinLeave", "*", "if &nu                      | set nornu | endif"},
-  {"FileReadPost", "*", "RustSetInlayHints"}
+  {"FileReadPost", "*", "RustSetInlayHints"},
+  {"CursorHold,CursorHoldI", "*", "lua vim.diagnostic.open_float(nil, {focus=false, scope=\"cursor\"})"}
 }
 
 vim.opt.number = true
 
+vim.cmd([[let g:beacon_minimal_jump = 1]])
