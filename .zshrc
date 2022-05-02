@@ -1,5 +1,3 @@
-zmodload zsh/zprof
-
 # If you come from bash you might have to change your $PATH.
 # export PATH=$HOME/bin:/usr/local/bin:$PATH
 
@@ -13,7 +11,7 @@ plugins=(zsh-nvm git npm rust golang brew docker zsh-autosuggestions zsh-syntax-
 
 source $ZSH/oh-my-zsh.sh
 
-alias lvim="~/.local/bin/lvim"
+alias v="~/.local/bin/lvim"
 alias chrome="open -a \"Google Chrome\""
 
 test -e "${HOME}/.iterm2_shell_integration.zsh" && source "${HOME}/.iterm2_shell_integration.zsh"
@@ -36,3 +34,4 @@ export PATH=$GOPATH/bin:$PATH
 alias ls="exa -lahF"
 alias l="exa -lahF"
 alias ll="exa -lahF"
+alias headers="httpstat"

@@ -11,13 +11,12 @@ an executable
 lvim.log.level = "warn"
 lvim.format_on_save = true
 lvim.colorscheme = "onenord"
+lvim.builtin.lualine.style = "default"
 lvim.builtin.lualine.options.theme = "onenord"
 
 -- keymappings [view all the defaults by pressing <leader>Lk]
 lvim.leader = "space"
 -- add your own keymapping
-lvim.keys.normal_mode["<C-s>"] = ":w<cr>"
-lvim.keys.normal_mode["<C-c>"] = ":'<, '>w !pbcopy"
 lvim.keys.normal_mode["<leader>fg"] = "<cmd>Telescope live_grep<cr>"
 lvim.keys.normal_mode["<leader>ff"] = "<cmd>Telescope find_files<cr>"
 lvim.keys.normal_mode["<leader>fb"] = "<cmd>Telescope file_browser<cr>"
@@ -32,12 +31,16 @@ lvim.keys.normal_mode["<leader>xk"] = "<cmd>lua vim.diagnostic.open_float(0, { s
 
 
 lvim.builtin.dashboard.custom_header = {
+  "",
+  "",
   "                                                                                ## #                   ",
   "                         ^                             ^                       # #                     ",
   "      ^    ^            /|\\            ^    ^         /|\\ ^                   ##         ^             ",
   "  ^  /|\\  /|\\  ^        /|\\  ^     ^  /|\\  /|\\  ^     /|\\/|\\    ^          __||         /|\\ ^    ^   ^ ",
   " /|\\ /|\\  /|\\ /|\\       /|\\ /|\\   /|\\ /|\\  /|\\ /|\\    /|\\/|\\   /|\\        /.\\__\\        /|\\/|\\  /|\\ /|\\",
   " .|  #|.. .|& /|\\        | #&|.   .|  #|.. .|& /|\\     | #|.   /|\\        |O | |        .| #|.. .|& /|\\",
+  "",
+  "",
 }
 lvim.builtin.dashboard.footer = ""
 -- unmap a default keymapping
@@ -94,13 +97,12 @@ lvim.builtin.treesitter.highlight.enabled = true
 
 -- ---@usage Select which servers should be configured manually. Requires `:LvimCacheRest` to take effect.
 -- See the full default list `:lua print(vim.inspect(lvim.lsp.override))`
--- vim.list_extend(lvim.lsp.override, { "pyright" })
-vim.list_extend(lvim.lsp.override, { "rust_analyzer"  })
+vim.list_extend(lvim.lsp.override, { "rust_analyzer" })
 
 -- ---@usage setup a server -- see: https://www.lunarvim.org/languages/#overriding-the-default-configuration
 -- local opts = {} -- check the lspconfig documentation for a list of all possible options
--- require("lvim.lsp.manager").setup("pylsp", opts)
-require("lvim.lsp.manager").setup("jedi_language_server", {})
+-- require("lvim.lsp.manager").setup("pylsp", {})
+-- require("lvim.lsp.manager").setup("jedi_language_server", {})
 
 -- you can set a custom on_attach function that will be used for all the language servers
 -- See <https://github.com/neovim/nvim-lspconfig#keybindings-and-completion>
@@ -198,12 +200,12 @@ lvim.plugins = {
   {
     "rmehri01/onenord.nvim",
     config = function ()
-      require('onenord').setup()
-    end, 
-  },
-  {
-    "danilamihailov/beacon.nvim",
-    config = function() end,
+      require('onenord').setup({
+        disable = {
+          background = true
+        }
+      })
+    end,
   },
   {
     "norcalli/nvim-colorizer.lua",
@@ -278,15 +280,20 @@ lvim.plugins = {
     end,
     ft = { "rust", "rs" },
   },
+  { "weilbith/nvim-code-action-menu" },
   {
-    "xiyaowong/nvim-transparent",
+    "akinsho/git-conflict.nvim",
     config = function()
-      require("transparent").setup({
-        enable = true
+      require('git-conflict').setup({
+        default_mappings = true,
+        disable_diagnostics = true,
+        highlights = {
+          incoming = 'DiffText',
+          current = 'DiffAdd',
+        }
       })
     end,
   },
-  { "weilbith/nvim-code-action-menu" }
 }
 
 -- Autocommands (https://neovim.io/doc/user/autocmd.html)
