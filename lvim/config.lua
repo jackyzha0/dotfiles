@@ -231,8 +231,10 @@ lvim.plugins = {
     "Pocco81/AutoSave.nvim",
     config = function()
       require("autosave").setup({
+        enabled = false,
+        events = {"InsertLeave"},
         clean_command_line_interval = 1000,
-        debounce_delay = 1000,
+        debounce_delay = 300,
       })
     end,
   },
