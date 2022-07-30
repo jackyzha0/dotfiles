@@ -11,7 +11,7 @@ plugins=(zsh-nvm git npm rust golang brew docker zsh-autosuggestions zsh-syntax-
 
 source $ZSH/oh-my-zsh.sh
 
-alias v="~/.local/bin/lvim"
+alias v="nvim"
 alias chrome="open -a \"Google Chrome\""
 
 test -e "${HOME}/.iterm2_shell_integration.zsh" && source "${HOME}/.iterm2_shell_integration.zsh"
@@ -35,3 +35,4 @@ alias ls="exa -lahF"
 alias l="exa -lahF"
 alias ll="exa -lahF"
 alias headers="httpstat"
+alias cgrep="grep --color=always"
