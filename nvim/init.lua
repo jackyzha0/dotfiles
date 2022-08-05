@@ -5,6 +5,7 @@ local bo = vim.bo
 local wo = vim.wo
 local g = vim.g
 local o = vim.o
+vim.opt.termguicolors = true
 
 -- ensure that packer is installed
 local install_path = fn.stdpath('data')..'/site/pack/packer/opt/packer.nvim'
@@ -199,6 +200,9 @@ packer.startup(function()
       })
     end
   }
+  use {
+    'lewis6991/gitsigns.nvim'
+  }
   end
 )
 
@@ -212,11 +216,11 @@ require('nvim-lsp-setup').setup({
     gt = 'vim.lsp.buf.type_definition',
   },
   on_attach = function(client, bufnr)
-      require('nvim-lsp-setup.utils').format_on_save(client)
   end,
   capabilities = vim.lsp.protocol.make_client_capabilities(),
   servers = {
     golangci_lint_ls = {},
+    gopls = {},
     clangd = {},
     dockerls = {},
     eslint = {},
@@ -342,7 +346,6 @@ vim.cmd [[
 vim.cmd [[
   augroup diagnostics
     autocmd!
-      autocmd CursorHold * lua vim.diagnostic.open_float(0, { scope = "line", border = "single" })
       autocmd CursorHoldI * silent! lua vim.lsp.buf.signature_help()
     augroup END
 ]]
@@ -351,8 +354,9 @@ vim.cmd [[
 local keymap = vim.api.nvim_set_keymap
 local opts = { noremap = true, silent = true }
 keymap("n", "<leader>o", "<cmd>Telescope find_files<cr>", opts)
-keymap("n", "<leader>f", "<cmd>Telescope live_grep<cr>", opts)
-keymap("i", "<CR>", "<Esc>", opts)
+keymap("n", "<leader>g", "<cmd>Telescope live_grep<cr>", opts)
+keymap("n", "ff", "<cmd>lua vim.lsp.buf.formatting()<CR>", opts)
+keymap("i", "<C-c>", "<Esc>", opts)
 keymap("n", "f", ":HopChar2<cr>", opts) 
 keymap('n', '<C-/>', '<CMD>lua require("Comment.api").toggle_current_linewise()<CR>', {})
 keymap('x', '<C-/>', '<ESC><CMD>lua require("Comment.api").toggle_linewise_op(vim.fn.visualmode())<CR>', {})
@@ -368,8 +372,8 @@ keymap("n", "<leader>s", "<C-w>j", {})
 keymap("n", "<leader>d", "<C-w>l", {})
 
 -- tabs
-keymap('n', '<M-<>', '<Cmd>BufferMovePrevious<CR>', opts)
-keymap('n', '<M->>', '<Cmd>BufferMoveNext<CR>', opts)
+keymap('n', '<M-,>', '<Cmd>BufferPrevious<CR>', opts)
+keymap('n', '<M-.>', '<Cmd>BufferNext<CR>', opts)
 keymap('n', '<M-q>', '<Cmd>BufferClose<CR>', opts)
 keymap('n', '<M-1>', '<Cmd>BufferGoto 1<CR>', opts)
 keymap('n', '<M-2>', '<Cmd>BufferGoto 2<CR>', opts)
