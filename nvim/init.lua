@@ -47,13 +47,18 @@ packer.startup(function()
     'jghauser/mkdir.nvim'
   }
   use {
-    'rmehri01/onenord.nvim',
+    'navarasu/onedark.nvim',
     config = function()
-      require('onenord').setup({
-        disable = {
-          background = true,
+      local onedark = require('onedark')
+      onedark.setup({
+        style = 'dark',
+        transparent = true,
+        code_style = {
+          comments = "none",
+          keywords = "bold"
         }
       })
+      onedark.load()
     end
   }
   use {
@@ -69,7 +74,7 @@ packer.startup(function()
     config = function()
       require('lualine').setup({
         options = {
-          theme = "onenord",
+          theme = "onedark",
           icons_enabled = false,
         }
       })
@@ -78,11 +83,13 @@ packer.startup(function()
   use {
     'lukas-reineke/indent-blankline.nvim',
     config = function()
-      require('indent_blankline').setup()
+      require('indent_blankline').setup({
+        char = "▏"
+      })
     end
   }
   use {
-    'junnplus/nvim-lsp-setup',
+    'junnplus/lsp-setup.nvim',
     requires = {
       'neovim/nvim-lspconfig',
       'williamboman/mason.nvim',
@@ -165,12 +172,6 @@ packer.startup(function()
     end
   }
   use {
-    'simrat39/rust-tools.nvim',
-    config = function()
-      require('rust-tools').setup({})
-    end
-  }
-  use {
     "kylechui/nvim-surround",
     config = function()
       require("nvim-surround").setup()
@@ -200,14 +201,13 @@ packer.startup(function()
       })
     end
   }
-  use {
-    'lewis6991/gitsigns.nvim'
-  }
+  use 'lewis6991/gitsigns.nvim'
+  use 'simrat39/rust-tools.nvim'
   end
 )
 
 -- LSP
-require('nvim-lsp-setup').setup({
+require('lsp-setup').setup({
   default_mappings = true,
   mappings = {
     gd = 'lua require"telescope.builtin".lsp_definitions()',
@@ -229,7 +229,14 @@ require('nvim-lsp-setup').setup({
     cssls = {},
     tailwindcss = {},
     tsserver = {},
-    rust_analyzer = require('nvim-lsp-setup.rust-tools').setup({
+    rust_analyzer = require('lsp-setup.rust-tools').setup({
+      tools = {
+        inlay_hints = {
+          show_parameter_hints = false,
+          other_hints_prefix = ":: ",
+          only_current_line = true,
+        }
+      },
       server = {
         settings = {
           ['rust-analyzer'] = {
@@ -304,6 +311,7 @@ wo.number = true
 wo.scrolloff = 8
 wo.sidescrolloff = 8
 wo.wrap = false
+wo.cursorline = true
 g.undofile = true
 o.clipboard = unnamedplus
 g.mapleader = " "
@@ -358,8 +366,8 @@ keymap("n", "<leader>g", "<cmd>Telescope live_grep<cr>", opts)
 keymap("n", "ff", "<cmd>lua vim.lsp.buf.formatting()<CR>", opts)
 keymap("i", "<C-c>", "<Esc>", opts)
 keymap("n", "f", ":HopChar2<cr>", opts) 
-keymap('n', '<C-/>', '<CMD>lua require("Comment.api").toggle_current_linewise()<CR>', {})
-keymap('x', '<C-/>', '<ESC><CMD>lua require("Comment.api").toggle_linewise_op(vim.fn.visualmode())<CR>', {})
+keymap('n', '<C-/>', '<CMD>lua require("Comment.api").toggle.linewise.current()<CR>', {})
+keymap('x', '<C-/>', '<ESC><CMD>lua require("Comment.api").toggle.linewise(vim.fn.visualmode())<CR>', {})
 
 -- tree hopping
 keymap('o', "m", ":<C-U>lua require('tsht').nodes()<CR>", {silent = true})

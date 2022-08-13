@@ -6,3 +6,5 @@
 	default = current
 [init]
 	defaultBranch = main
+[core]
+	excludesfile = /Users/jzhao/.gitignore
