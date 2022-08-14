@@ -56,6 +56,10 @@ packer.startup(function()
         code_style = {
           comments = "none",
           keywords = "bold"
+        },
+        diagnostics = {
+          darker = false,
+          background = false
         }
       })
       onedark.load()
