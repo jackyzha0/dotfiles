@@ -186,7 +186,7 @@ packer.startup(function()
     config = function() require("nvim-autopairs").setup {} end
   }
   use {
-    'akinsho/git-conflict.nvim',
+    'akinsho/git-conflict.nvim', tag = 'v1.0.0',
     config = function()
       require('git-conflict').setup()
     end
@@ -229,10 +229,13 @@ require('lsp-setup').setup({
     dockerls = {},
     eslint = {},
     html = {},
+    hls = {},
     jsonls = {},
     cssls = {},
     tailwindcss = {},
     tsserver = {},
+    pyright = {},
+    marksman = {},
     rust_analyzer = require('lsp-setup.rust-tools').setup({
       tools = {
         inlay_hints = {
@@ -317,7 +320,7 @@ wo.sidescrolloff = 8
 wo.wrap = false
 wo.cursorline = true
 g.undofile = true
-o.clipboard = unnamedplus
+o.clipboard = "unnamedplus,unnamed"
 g.mapleader = " "
 
 local TAB_WIDTH = 2
@@ -367,7 +370,7 @@ local keymap = vim.api.nvim_set_keymap
 local opts = { noremap = true, silent = true }
 keymap("n", "<leader>o", "<cmd>Telescope find_files<cr>", opts)
 keymap("n", "<leader>g", "<cmd>Telescope live_grep<cr>", opts)
-keymap("n", "ff", "<cmd>lua vim.lsp.buf.formatting()<CR>", opts)
+keymap("n", "<leader>f", "<cmd>lua vim.lsp.buf.formatting()<CR>", opts)
 keymap("i", "<C-c>", "<Esc>", opts)
 keymap("n", "f", ":HopChar2<cr>", opts) 
 keymap('n', '<C-/>', '<CMD>lua require("Comment.api").toggle.linewise.current()<CR>', {})
