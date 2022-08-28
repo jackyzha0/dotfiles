@@ -186,9 +186,23 @@ packer.startup(function()
     config = function() require("nvim-autopairs").setup {} end
   }
   use {
-    'akinsho/git-conflict.nvim', tag = 'v1.0.0',
+    'lewis6991/gitsigns.nvim',
     config = function()
-      require('git-conflict').setup()
+      require('gitsigns').setup()
+    end
+  } 
+  use {
+    'akinsho/git-conflict.nvim',
+    tag = "*",
+    config = function()
+      require('git-conflict').setup({
+        default_mappings = true,
+        disable_diagnostics = true,
+        highlights = {
+          incoming = 'DiffText',
+          current = 'DiffAdd',
+        }
+      })
     end
   }
   use {
@@ -205,7 +219,6 @@ packer.startup(function()
       })
     end
   }
-  use 'lewis6991/gitsigns.nvim'
   use 'simrat39/rust-tools.nvim'
   end
 )
@@ -400,10 +413,3 @@ keymap('n', '<M-7>', '<Cmd>BufferGoto 7<CR>', opts)
 keymap('n', '<M-8>', '<Cmd>BufferGoto 8<CR>', opts)
 keymap('n', '<M-9>', '<Cmd>BufferGoto 9<CR>', opts)
 
--- git
-keymap('n', 'co', '<Plug>(git-conflict-ours)', opts)
-keymap('n', 'ct', '<Plug>(git-conflict-theirs)', opts)
-keymap('n', 'cb', '<Plug>(git-conflict-both)', opts)
-keymap('n', 'c0', '<Plug>(git-conflict-none)', opts)
-keymap('n', ']x', '<Plug>(git-conflict-prev-conflict)', opts)
-keymap('n', '[x', '<Plug>(git-conflict-next-conflict)', opts)
