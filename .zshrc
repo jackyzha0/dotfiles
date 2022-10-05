@@ -12,6 +12,7 @@ plugins=(zsh-nvm git npm rust golang brew docker zsh-autosuggestions zsh-syntax-
 source $ZSH/oh-my-zsh.sh
 
 alias v="nvim"
+export VISUAL=/usr/local/bin/nvim
 alias chrome="open -a \"Google Chrome\""
 
 test -e "${HOME}/.iterm2_shell_integration.zsh" && source "${HOME}/.iterm2_shell_integration.zsh"
@@ -30,6 +31,7 @@ eval "$(pyenv init -)"
 
 export GOPATH=/Users/$USER/go
 export PATH=$GOPATH/bin:$PATH
+export PATH=$PATH:$HOME/.local/bin
 
 alias ls="exa -lahF"
 alias l="exa -lahF"

@@ -106,7 +106,7 @@ packer.startup(function()
       require("lsp_lines").setup()
     end,
   }
-  use 'windwp/nvim-ts-autotag'
+  -- use 'windwp/nvim-ts-autotag'
   use {
     'nvim-treesitter/nvim-treesitter',
     run = ':TSUpdate',
@@ -164,6 +164,7 @@ packer.startup(function()
     'weilbith/nvim-code-action-menu',
     cmd = 'CodeActionMenu'
   }
+  use "kyazdani42/nvim-web-devicons"
   use {
     'romgrk/barbar.nvim',
     requires = { 'kyazdani42/nvim-web-devicons' },
@@ -192,20 +193,6 @@ packer.startup(function()
     end
   } 
   use {
-    'akinsho/git-conflict.nvim',
-    tag = "*",
-    config = function()
-      require('git-conflict').setup({
-        default_mappings = true,
-        disable_diagnostics = true,
-        highlights = {
-          incoming = 'DiffText',
-          current = 'DiffAdd',
-        }
-      })
-    end
-  }
-  use {
     'norcalli/nvim-colorizer.lua',
     config = function()
       require("colorizer").setup({ "*" }, {
@@ -220,6 +207,23 @@ packer.startup(function()
     end
   }
   use 'simrat39/rust-tools.nvim'
+  use {
+    'sindrets/diffview.nvim',
+    requires = 'nvim-lua/plenary.nvim',
+    config = function()
+      require("diffview").setup({
+        enhanced_diff_hl = true,
+        view = {
+          merge_tool = {
+            layout = "diff3_mixed"
+          }
+        },
+        file_panel = {
+          listing_style = "list",
+        }
+      })
+    end
+  }
   end
 )
 
@@ -249,6 +253,8 @@ require('lsp-setup').setup({
     tsserver = {},
     pyright = {},
     marksman = {},
+    julials = {},
+    jdtls = {},
     rust_analyzer = require('lsp-setup.rust-tools').setup({
       tools = {
         inlay_hints = {
@@ -332,8 +338,9 @@ wo.scrolloff = 8
 wo.sidescrolloff = 8
 wo.wrap = false
 wo.cursorline = true
-g.undofile = true
-o.clipboard = "unnamedplus,unnamed"
+o.undodir="tmp/.vim-undo-dir"
+o.undofile = true
+o.clipboard = "unnamed"
 g.mapleader = " "
 
 local TAB_WIDTH = 2
@@ -385,7 +392,8 @@ keymap("n", "<leader>o", "<cmd>Telescope find_files<cr>", opts)
 keymap("n", "<leader>g", "<cmd>Telescope live_grep<cr>", opts)
 keymap("n", "<leader>f", "<cmd>lua vim.lsp.buf.formatting()<CR>", opts)
 keymap("i", "<C-c>", "<Esc>", opts)
-keymap("n", "f", ":HopChar2<cr>", opts) 
+keymap("n", "f", ":HopChar1<cr>", opts) 
+keymap("n", "<leader>m", ":DiffviewOpen<CR>", opts) 
 keymap('n', '<C-/>', '<CMD>lua require("Comment.api").toggle.linewise.current()<CR>', {})
 keymap('x', '<C-/>', '<ESC><CMD>lua require("Comment.api").toggle.linewise(vim.fn.visualmode())<CR>', {})
 
