@@ -39,6 +39,11 @@ packer.startup(function()
       require'telescope'.setup {
         defaults = {
           file_ignore_patterns = { ".git/", "node_modules/" },
+        },
+        pickers = {
+          find_files = {
+            hidden = false,
+          }
         }
       }
     end
@@ -106,7 +111,7 @@ packer.startup(function()
       require("lsp_lines").setup()
     end,
   }
-  -- use 'windwp/nvim-ts-autotag'
+  use 'windwp/nvim-ts-autotag'
   use {
     'nvim-treesitter/nvim-treesitter',
     run = ':TSUpdate',
@@ -206,7 +211,19 @@ packer.startup(function()
       })
     end
   }
+  use 'rcarriga/nvim-notify'
   use 'simrat39/rust-tools.nvim'
+  use 'rktjmp/highlight-current-n.nvim'
+  use {
+    "stevearc/dressing.nvim",
+    config = function()
+      require("dressing").setup({
+        input = {
+          insert_only = false,
+        },
+      })
+    end,
+  }
   use {
     'sindrets/diffview.nvim',
     requires = 'nvim-lua/plenary.nvim',
@@ -338,7 +355,7 @@ wo.scrolloff = 8
 wo.sidescrolloff = 8
 wo.wrap = false
 wo.cursorline = true
-o.undodir="tmp/.vim-undo-dir"
+o.undodir="/tmp/.vim-undo-dir"
 o.undofile = true
 o.clipboard = "unnamed"
 g.mapleader = " "
@@ -388,9 +405,11 @@ vim.cmd [[
 -- Keymaps
 local keymap = vim.api.nvim_set_keymap
 local opts = { noremap = true, silent = true }
-keymap("n", "<leader>o", "<cmd>Telescope find_files<cr>", opts)
+keymap("n", "<leader>o", "<cmd>Telescope find_files hidden=true<cr>", opts)
 keymap("n", "<leader>g", "<cmd>Telescope live_grep<cr>", opts)
+keymap("n", "<leader>b", "<cmd>Telescope buffers<cr>", opts)
 keymap("n", "<leader>f", "<cmd>lua vim.lsp.buf.formatting()<CR>", opts)
+keymap("n", "<leader>c", "<cmd>CodeActionMenu<CR>", opts)
 keymap("i", "<C-c>", "<Esc>", opts)
 keymap("n", "f", ":HopChar1<cr>", opts) 
 keymap("n", "<leader>m", ":DiffviewOpen<CR>", opts) 
