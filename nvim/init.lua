@@ -24,7 +24,7 @@ packer.init({
 })
 
 --- startup and add configure plugins
-packer.startup(function()
+packer.startup({function()
   local use = use
   use {
     'lewis6991/impatient.nvim',
@@ -32,20 +32,31 @@ packer.startup(function()
       require'impatient'
     end
   }
+  use({ "nvim-telescope/telescope-fzf-native.nvim", run = "make" })
   use {
-    'nvim-telescope/telescope.nvim', tag = '0.1.0',
+    'nvim-telescope/telescope.nvim', branch = '0.1.x',
     requires = { {'nvim-lua/plenary.nvim'} },
     config = function()
       require'telescope'.setup {
         defaults = {
           file_ignore_patterns = { ".git/", "node_modules/" },
-        },
-        pickers = {
-          find_files = {
-            hidden = false,
+          preview = {
+            filesize_hook = function(filepath, bufnr, opts)
+                local max_bytes = 10000
+                local cmd = {"head", "-c", max_bytes, filepath}
+                require('telescope.previewers.utils').job_maker(cmd, bufnr, opts)
+            end
           }
+        },
+        fzf = {
+          fuzzy = true,                    -- false will only do exact matching
+          override_generic_sorter = true,  -- override the generic sorter
+          override_file_sorter = true,     -- override the file sorter
+          case_mode = "smart_case",        -- or "ignore_case" or "respect_case"
+          minimum_files_characters = 3
         }
       }
+      require('telescope').load_extension('fzf')
     end
   }
   use {
@@ -120,6 +131,9 @@ packer.startup(function()
         auto_install = true,
         autotag = { enable = true },
         highlight = { enable = true },
+        disable = function(lang, bufnr)
+          return vim.api.nvim_buf_line_count(bufnr) > 10000
+        end
       }
     end
   }
@@ -241,8 +255,15 @@ packer.startup(function()
       })
     end
   }
-  end
-)
+  end,
+  config = {
+    display = {
+      open_fn = function()
+        return require('packer.util').float({ border = 'rounded' })
+      end
+    }
+  }
+})
 
 -- LSP
 require('lsp-setup').setup({
@@ -285,6 +306,9 @@ require('lsp-setup').setup({
           ['rust-analyzer'] = {
             cargo = {
               loadOutDirsFromCheck = true,
+            },
+            checkOnSave = {
+              command = "clippy",
             },
             procMacro = {
               enable = true,
@@ -408,7 +432,7 @@ local opts = { noremap = true, silent = true }
 keymap("n", "<leader>o", "<cmd>Telescope find_files hidden=true<cr>", opts)
 keymap("n", "<leader>g", "<cmd>Telescope live_grep<cr>", opts)
 keymap("n", "<leader>b", "<cmd>Telescope buffers<cr>", opts)
-keymap("n", "<leader>f", "<cmd>lua vim.lsp.buf.formatting()<CR>", opts)
+keymap("n", "<leader>f", "<cmd>lua vim.lsp.buf.format { async = true }<CR>", opts)
 keymap("n", "<leader>c", "<cmd>CodeActionMenu<CR>", opts)
 keymap("i", "<C-c>", "<Esc>", opts)
 keymap("n", "f", ":HopChar1<cr>", opts) 
