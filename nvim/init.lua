@@ -67,7 +67,7 @@ packer.startup({function()
     config = function()
       local onedark = require('onedark')
       onedark.setup({
-        style = 'dark',
+        style = 'cool',
         transparent = true,
         code_style = {
           comments = "none",
@@ -165,6 +165,12 @@ packer.startup({function()
     end
   }
   use {
+    'lewis6991/satellite.nvim',
+    config = function()
+      require('satellite').setup()
+    end
+  }
+  use {
     'numToStr/Comment.nvim',
     config = function()
       require('Comment').setup()
@@ -189,9 +195,12 @@ packer.startup({function()
     requires = { 'kyazdani42/nvim-web-devicons' },
     config = function()
       require'bufferline'.setup {
+        animation = false,
         auto_hide = true,
         closable = false,
-        clickable = false
+        clickable = false,
+        maximum_padding = 2,
+        icons = false,
       } 
     end
   }
@@ -222,6 +231,7 @@ packer.startup({function()
         hsl_fn = true, -- CSS hsl() and hsla() functions
         css = false, -- Enable all CSS features: rgb_fn, hsl_fn, names, RGB, RRGGBB
         css_fn = false, -- Enable all CSS *functions*: rgb_fn, hsl_fn
+        mode = 'foreground',
       })
     end
   }
@@ -239,20 +249,10 @@ packer.startup({function()
     end,
   }
   use {
-    'sindrets/diffview.nvim',
-    requires = 'nvim-lua/plenary.nvim',
+    'akinsho/git-conflict.nvim',
+    tag = "*",
     config = function()
-      require("diffview").setup({
-        enhanced_diff_hl = true,
-        view = {
-          merge_tool = {
-            layout = "diff3_mixed"
-          }
-        },
-        file_panel = {
-          listing_style = "list",
-        }
-      })
+      require('git-conflict').setup()
     end
   }
   end,
@@ -306,6 +306,9 @@ require('lsp-setup').setup({
           ['rust-analyzer'] = {
             cargo = {
               loadOutDirsFromCheck = true,
+              buildScripts = {
+                enable = true
+              }
             },
             checkOnSave = {
               command = "clippy",
@@ -464,3 +467,9 @@ keymap('n', '<M-7>', '<Cmd>BufferGoto 7<CR>', opts)
 keymap('n', '<M-8>', '<Cmd>BufferGoto 8<CR>', opts)
 keymap('n', '<M-9>', '<Cmd>BufferGoto 9<CR>', opts)
 
+keymap('n', 'co', '<Plug>(git-conflict-ours)', opts)
+keymap('n', 'ct', '<Plug>(git-conflict-theirs)', opts)
+keymap('n', 'cb', '<Plug>(git-conflict-both)', opts)
+keymap('n', 'c0', '<Plug>(git-conflict-none)', opts)
+keymap('n', ']x', '<Plug>(git-conflict-prev-conflict)', opts)
+keymap('n', '[x', '<Plug>(git-conflict-next-conflict)', opts)
