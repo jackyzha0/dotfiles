@@ -104,6 +104,7 @@ packer.startup({function()
     'lukas-reineke/indent-blankline.nvim',
     config = function()
       require('indent_blankline').setup({
+        show_current_context = true,
         char = "▏"
       })
     end
@@ -250,9 +251,11 @@ packer.startup({function()
   }
   use {
     'akinsho/git-conflict.nvim',
-    tag = "*",
+    tag = "v1.0.0",
     config = function()
-      require('git-conflict').setup()
+      require('git-conflict').setup({
+        disable_diagnostics = true
+      })
     end
   }
   end,
