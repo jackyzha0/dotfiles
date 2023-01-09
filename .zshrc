@@ -38,7 +38,9 @@ alias l="exa -lahF"
 alias ll="exa -lahF"
 alias headers="httpstat"
 alias cat="bat -fP"
+alias gds="gd --staged"
 alias procs="procs --watch --sortd cpu"
 alias monkeytype="tt -n 50 -theme vs-code-dark-plus"
+alias save="ga . && gc -m"
 
 cd ~/projects

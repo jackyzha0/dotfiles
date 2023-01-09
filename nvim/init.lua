@@ -82,13 +82,6 @@ packer.startup({function()
     end
   }
   use {
-    'phaazon/hop.nvim',
-    branch = 'v2', -- optional but strongly recommended
-    config = function()
-      require'hop'.setup { keys = 'etovxqpdygfblzhckisuran' }
-    end
-  }
-  use {
     'nvim-lualine/lualine.nvim',
     requires = { 'kyazdani42/nvim-web-devicons', opt = true },
     config = function()
@@ -132,6 +125,28 @@ packer.startup({function()
         auto_install = true,
         autotag = { enable = true },
         highlight = { enable = true },
+        textobjects = {
+          move = {
+            enable = true,
+            set_jumps = true,
+            goto_previous_start = {
+              ["[["] = "@parameter.inner"
+            },
+            goto_next_start = {
+              ["]]"] = "@parameter.inner"
+            }
+          },
+          select = {
+            enable = true,
+            lookahead = true,
+            keymaps = {
+              ["iq"] = "@parameter.inner",
+              ["aq"] = "@parameter.outer",
+              ["ib"] = "@block.inner",
+              ["ab"] = "@block.outer",
+            }
+          }
+        },
         disable = function(lang, bufnr)
           return vim.api.nvim_buf_line_count(bufnr) > 10000
         end
@@ -140,6 +155,7 @@ packer.startup({function()
   }
   use 'antoinemadec/FixCursorHold.nvim'
   use 'nvim-treesitter/nvim-treesitter-context'
+  use 'nvim-treesitter/nvim-treesitter-textobjects'
   use 'machakann/vim-highlightedyank'
   use {
     'mfussenegger/nvim-ts-hint-textobject',
@@ -256,6 +272,13 @@ packer.startup({function()
       require('git-conflict').setup({
         disable_diagnostics = true
       })
+    end
+  }
+  use 'fedepujol/move.nvim'
+  use {
+    "andrewferrier/wrapping.nvim",
+    config = function()
+      require("wrapping").setup()
     end
   }
   end,
@@ -446,10 +469,6 @@ keymap("n", "<leader>m", ":DiffviewOpen<CR>", opts)
 keymap('n', '<C-/>', '<CMD>lua require("Comment.api").toggle.linewise.current()<CR>', {})
 keymap('x', '<C-/>', '<ESC><CMD>lua require("Comment.api").toggle.linewise(vim.fn.visualmode())<CR>', {})
 
--- tree hopping
-keymap('o', "m", ":<C-U>lua require('tsht').nodes()<CR>", {silent = true})
-keymap('x', "m", ":lua require('tsht').nodes()<CR>", opts)
-
 -- window splits
 keymap("n", "<leader>w", "<C-w>k", {})
 keymap("n", "<leader>a", "<C-w>h", {})
@@ -476,3 +495,12 @@ keymap('n', 'cb', '<Plug>(git-conflict-both)', opts)
 keymap('n', 'c0', '<Plug>(git-conflict-none)', opts)
 keymap('n', ']x', '<Plug>(git-conflict-prev-conflict)', opts)
 keymap('n', '[x', '<Plug>(git-conflict-next-conflict)', opts)
+
+-- moves
+-- Normal-mode commands
+keymap('n', '<A-Down>', ':MoveLine(1)<CR>', opts)
+keymap('n', '<A-Up>', ':MoveLine(-1)<CR>', opts)
+
+-- Visual-mode commands
+keymap('v', '<A-Down>', ':MoveBlock(1)<CR>', opts)
+keymap('v', '<A-Up>', ':MoveBlock(-1)<CR>', opts)
