@@ -68,7 +68,10 @@ packer.startup({function()
       local onedark = require('onedark')
       onedark.setup({
         style = 'cool',
-        transparent = true,
+        -- transparent = true,
+        colors = {
+          bg0 = "#171717"
+        },
         code_style = {
           comments = "none",
           keywords = "bold"
@@ -76,6 +79,9 @@ packer.startup({function()
         diagnostics = {
           darker = false,
           background = false
+        },
+        lualine = {
+          transparent = true
         }
       })
       onedark.load()
@@ -274,7 +280,6 @@ packer.startup({function()
       })
     end
   }
-  use 'fedepujol/move.nvim'
   use {
     "andrewferrier/wrapping.nvim",
     config = function()
