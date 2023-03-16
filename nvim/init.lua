@@ -91,6 +91,26 @@ packer.startup({
             darker = false,
             background = false
           },
+          colors = {
+            black = "#151820",
+            bg0 = "#242b38",
+            bg1 = "#2d3343",
+            bg2 = "#343e4f",
+            bg3 = "#363c51",
+            bg_d = "#1e242e",
+            bg_blue = "#91E9EE",
+            bg_yellow = "#f0d197",
+            fg = "#dfdee0",
+            purple = "#8E7EB4",
+            green = "#20FFAF",
+            orange = "#db9351",
+            blue = "#0DEFE1",
+            yellow = "#f7c668",
+            cyan = "#07a39a",
+            red = "#F65C5C",
+            grey = "#546178",
+            light_grey = "#7d899f",
+          },
           highlights = {
             FloatBorder = { bg = "NONE" },
             NormalFloat = { bg = "NONE" }
@@ -113,6 +133,7 @@ packer.startup({
       after = "nvim-web-devicons",     -- keep this if you're using NvChad
       config = function()
         require("barbecue").setup({
+          show_modified = true,
           symbols = {
             ellipsis = "..."
           }
@@ -477,7 +498,7 @@ vim.api.nvim_create_autocmd("CursorHold", {
       close_events = { "BufLeave", "CursorMoved", "InsertEnter", "FocusLost" },
       border = "rounded",
       source = 'always',
-      prefix = ' ',
+      prefix = '',
       scope = 'cursor',
     }
     vim.diagnostic.open_float(nil, opts)
