@@ -147,7 +147,42 @@ require("lazy").setup({
     opts = {
       options = {
         theme = "onedark",
-        icons_enabled = false,
+      },
+      sections = {
+        lualine_a = { 'mode' },
+        lualine_b = { 'branch', 'diff', 'diagnostics' },
+        lualine_c = {},
+        lualine_x = { 'encoding', 'filesize' },
+        lualine_y = { 'progress' },
+        lualine_z = { 'location' }
+      }
+    }
+  },
+  {
+    'akinsho/bufferline.nvim',
+    version = "v3.*",
+    dependencies = 'nvim-tree/nvim-web-devicons',
+    opts = {
+      options = {
+        separator_style = { ' ', ' ' },
+      },
+      highlights = {
+        duplicate_selected = {
+          bg = '#242b38'
+        },
+        modified_selected = {
+          bg = '#242b38'
+        },
+        close_button_selected = {
+          bg = '#242b38'
+        },
+        indicator_selected = {
+          bg = '#242b38'
+        },
+        buffer_selected ={
+          italic = false,
+          bg = '#242b38'
+        }
       }
     }
   },
@@ -344,7 +379,13 @@ require('lsp-setup').setup({
     jsonls = {},
     cssls = {},
     tailwindcss = {},
-    tsserver = {},
+    tsserver = {
+      settings = {
+        implicitProjectConfiguration = {
+          checkJs = true
+        }
+      }
+    },
     pyright = {},
     marksman = {},
     julials = {},
@@ -352,7 +393,7 @@ require('lsp-setup').setup({
     rust_analyzer = require('lsp-setup.rust-tools').setup({
       tools = {
         inlay_hints = {
-          show_parameter_hints = false,
+          show_parameter_hints = true,
           other_hints_prefix = ":: ",
           only_current_line = true,
         }
@@ -503,6 +544,20 @@ keymap('n', 'cb', '<Plug>(git-conflict-both)', opts)
 keymap('n', 'c0', '<Plug>(git-conflict-none)', opts)
 keymap('n', ']x', '<Plug>(git-conflict-prev-conflict)', opts)
 keymap('n', '[x', '<Plug>(git-conflict-next-conflict)', opts)
+
+-- tabs
+keymap('n', '<M-,>', '<Cmd>BufferLineCyclePrev<CR>', opts)
+keymap('n', '<M-.>', '<Cmd>BufferLineCycleNext<CR>', opts)
+keymap('n', '<M-q>', '<Cmd>BufferClose<CR>', opts)
+keymap('n', '<M-1>', '<Cmd>BufferLineGoToBuffer 1<CR>', opts)
+keymap('n', '<M-2>', '<Cmd>BufferLineGoToBuffer 2<CR>', opts)
+keymap('n', '<M-3>', '<Cmd>BufferLineGoToBuffer 3<CR>', opts)
+keymap('n', '<M-4>', '<Cmd>BufferLineGoToBuffer 4<CR>', opts)
+keymap('n', '<M-5>', '<Cmd>BufferLineGoToBuffer 5<CR>', opts)
+keymap('n', '<M-6>', '<Cmd>BufferLineGoToBuffer 6<CR>', opts)
+keymap('n', '<M-7>', '<Cmd>BufferLineGoToBuffer 7<CR>', opts)
+keymap('n', '<M-8>', '<Cmd>BufferLineGoToBuffer 8<CR>', opts)
+keymap('n', '<M-9>', '<Cmd>BufferLineGoToBuffer 9<CR>', opts)
 
 -- moves
 -- Normal-mode commands

@@ -7,13 +7,12 @@ ZSH_THEME="spaceship"
 
 export NVM_LAZY_LOAD=true
 export NVM_COMPLETION=true
-plugins=(zsh-nvm git npm rust golang brew docker zsh-autosuggestions zsh-syntax-highlighting)
+plugins=(git zsh-autosuggestions zsh-syntax-highlighting)
 
+export DISABLE_AUTO_UPDATE=true
 source $ZSH/oh-my-zsh.sh
 
-alias v="nvim"
 export VISUAL=/usr/local/bin/nvim
-alias chrome="open -a \"Google Chrome\""
 
 test -e "${HOME}/.iterm2_shell_integration.zsh" && source "${HOME}/.iterm2_shell_integration.zsh"
 
@@ -21,18 +20,12 @@ test -e "${HOME}/.iterm2_shell_integration.zsh" && source "${HOME}/.iterm2_shell
 eval "$(starship init zsh)"
 
 export NVM_DIR="$HOME/.nvm"
-# [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
-[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
-
-
-eval "$(pyenv init --path)"
-eval "$(pyenv init -)"
-[ -f "/Users/jzhao/.ghcup/env" ] && source "/Users/jzhao/.ghcup/env" # ghcup-env
-
 export GOPATH=/Users/$USER/go
 export PATH=$GOPATH/bin:$PATH
 export PATH=$PATH:$HOME/.local/bin
 
+alias v="nvim"
+alias chrome="open -a \"Google Chrome\""
 alias ls="exa -lahF"
 alias l="exa -lahF"
 alias ll="exa -lahF"
@@ -44,3 +37,10 @@ alias monkeytype="tt -n 50 -theme vs-code-dark-plus"
 alias save="ga . && gc -m"
 
 cd ~/projects
+
+# bun completions
+[ -s "/Users/jzhao/.bun/_bun" ] && source "/Users/jzhao/.bun/_bun"
+
+# bun
+export BUN_INSTALL="$HOME/.bun"
+export PATH="$BUN_INSTALL/bin:$PATH"
