@@ -179,7 +179,7 @@ require("lazy").setup({
         indicator_selected = {
           bg = '#242b38'
         },
-        buffer_selected ={
+        buffer_selected = {
           italic = false,
           bg = '#242b38'
         }
@@ -281,6 +281,10 @@ require("lazy").setup({
   },
   {
     'numToStr/Comment.nvim',
+    opts = {}
+  },
+  {
+    'MunifTanjim/prettier.nvim',
     opts = {}
   },
   {
