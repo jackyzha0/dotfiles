@@ -377,7 +377,16 @@ require('lsp-setup').setup({
     gopls = {},
     clangd = {},
     dockerls = {},
-    eslint = {},
+    eslint = {
+      bin = 'eslint',
+      code_actions = {
+        enable = true,
+        apply_on_save = {
+          enable = true,
+          types = { "directive", "problem", "suggestion", "layout" }
+        }
+      }
+    },
     html = {},
     hls = {},
     jsonls = {},
@@ -528,7 +537,7 @@ local opts = { noremap = true, silent = true }
 keymap("n", "<leader>o", "<cmd>Telescope find_files hidden=true<cr>", opts)
 keymap("n", "<leader>g", "<cmd>Telescope live_grep<cr>", opts)
 keymap("n", "<leader>t", "<cmd>Telescope buffers<cr>", opts)
-keymap("n", "<leader>f", "<cmd>lua vim.lsp.buf.format { async = true }<CR>", opts)
+keymap("n", "<leader>f", "<cmd>lua vim.lsp.buf.format()<CR>", opts)
 keymap("n", "<leader>c", "<cmd>CodeActionMenu<CR>", opts)
 keymap("i", "<C-c>", "<Esc>", opts)
 keymap("n", "f", ":HopChar1<cr>", opts)
