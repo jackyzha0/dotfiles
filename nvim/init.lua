@@ -79,7 +79,10 @@ require("lazy").setup({
         },
         highlights = {
           FloatBorder = { bg = "NONE" },
-          NormalFloat = { bg = "NONE" }
+          NormalFloat = { bg = "NONE" },
+          GitSignsChange = { fg = "#f7c668" },
+          GitSignsChangeLn = { fg = "#f7c668" },
+          GitSignsChangeNr = { fg = "#f7c668" },
         },
         lualine = {
           transparent = true
@@ -97,13 +100,6 @@ require("lazy").setup({
       require 'telescope'.setup {
         defaults = {
           file_ignore_patterns = { ".git/", "node_modules/" },
-          preview = {
-            filesize_hook = function(filepath, bufnr, opts)
-              local max_bytes = 10000
-              local cmd = { "head", "-c", max_bytes, filepath }
-              require('telescope.previewers.utils').job_maker(cmd, bufnr, opts)
-            end
-          }
         },
         extensions = {
           fzf = {
@@ -120,6 +116,9 @@ require("lazy").setup({
                 ["<c-x>"] = "delete_buffer",
               }
             }
+          },
+          live_grep = {
+            debounce = 1000
           }
         }
       }
@@ -158,6 +157,7 @@ require("lazy").setup({
       }
     }
   },
+  "numToStr/prettierrc.nvim",
   {
     'akinsho/bufferline.nvim',
     version = "v3.*",
@@ -188,9 +188,11 @@ require("lazy").setup({
   },
   {
     'lukas-reineke/indent-blankline.nvim',
+    main = "ibl",
     opts = {
-      show_current_context = true,
-      char = "▏"
+      indent = {
+        char = "▏"
+      }
     }
   },
   {
@@ -277,7 +279,9 @@ require("lazy").setup({
   },
   {
     'lewis6991/satellite.nvim',
-    opts = {}
+    opts = {
+      winblend = 0,
+    }
   },
   {
     'numToStr/Comment.nvim',
@@ -307,7 +311,23 @@ require("lazy").setup({
       check_ts = true
     }
   },
-  'lewis6991/gitsigns.nvim',
+  {
+    'lewis6991/gitsigns.nvim',
+    opts = {
+      signs = {
+        add          = { text = '┃' },
+        change       = { text = '┃' },
+        delete       = { text = '┃' },
+        topdelete    = { text = '┃' },
+        changedelete = { text = '┃' },
+      },
+      current_line_blame = true,
+      current_line_blame_opts = {
+        virt_text = true,
+        virt_text_pos = 'right_align',
+      },
+    }
+  },
   {
     'norcalli/nvim-colorizer.lua',
     config = function()
@@ -377,21 +397,10 @@ require('lsp-setup').setup({
     gopls = {},
     clangd = {},
     dockerls = {},
-    eslint = {
-      bin = 'eslint',
-      code_actions = {
-        enable = true,
-        apply_on_save = {
-          enable = true,
-          types = { "directive", "problem", "suggestion", "layout" }
-        }
-      }
-    },
     html = {},
     hls = {},
     jsonls = {},
     cssls = {},
-    tailwindcss = {},
     tsserver = {
       settings = {
         implicitProjectConfiguration = {
@@ -403,7 +412,7 @@ require('lsp-setup').setup({
     marksman = {},
     julials = {},
     jdtls = {},
-    rust_analyzer = require('lsp-setup.rust-tools').setup({
+    rust_analyzer = require('rust-tools').setup({
       tools = {
         inlay_hints = {
           show_parameter_hints = true,
