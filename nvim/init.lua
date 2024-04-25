@@ -644,10 +644,6 @@ if vim.g.neovide then
   vim.api.nvim_set_keymap('!', '<D-v>', '<C-R>+', { noremap = true, silent = true})
   vim.api.nvim_set_keymap('t', '<D-v>', '<C-R>+', { noremap = true, silent = true})
   vim.api.nvim_set_keymap('v', '<D-v>', '<C-R>+', { noremap = true, silent = true})
-
-  -- Close window shortcut
   vim.api.nvim_set_keymap('n', '<D-w>', ':q<CR>', { noremap = true, silent = true })
-
-  -- New tab shortcut
   vim.api.nvim_set_keymap('n', '<D-t>', ':enew<CR>', { noremap = true, silent = true })
 end
