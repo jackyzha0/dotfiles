@@ -629,12 +629,12 @@ keymap('v', '<A-Up>', ':MoveBlock(-1)<CR>', opts)
 
 -- Neovide options
 if vim.g.neovide then
+  vim.g.neovide_show_border = true
   vim.g.neovide_cursor_animation_length = 0.08
   vim.g.neovide_padding_top = 0
-  vim.g.neovide_show_border = true
-  vim.g.neovide_unlink_border_highlights = false
   vim.g.neovide_input_macos_alt_is_meta = true
   vim.g.neovide_floating_shadow = false
+  vim.g.neovide_remember_window_size = false
 
   -- shortcuts 
   vim.keymap.set('n', '<D-s>', ':w<CR>') -- Save
