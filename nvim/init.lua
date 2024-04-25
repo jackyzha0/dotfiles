@@ -58,8 +58,8 @@ require("lazy").setup({
           background = false
         },
         colors = {
-          black = "#151820",
-          bg0 = "#242b38",
+          black = "#000000",
+          bg0 = "#171717",
           bg1 = "#2d3343",
           bg2 = "#343e4f",
           bg3 = "#363c51",
@@ -99,7 +99,7 @@ require("lazy").setup({
     config = function()
       require 'telescope'.setup {
         defaults = {
-          file_ignore_patterns = { ".git/", "node_modules/" },
+          file_ignore_patterns = { "node_modules/" },
         },
         extensions = {
           fzf = {
@@ -137,7 +137,11 @@ require("lazy").setup({
       show_modified = true,
       symbols = {
         ellipsis = "..."
-      }
+      },
+      -- https://github.com/neovide/neovide/pull/2165
+      lead_custom_section = function()
+        return { { " ", "WinBar" } }
+      end,
     }
   },
   {
@@ -249,7 +253,7 @@ require("lazy").setup({
     end
   },
   'simrat39/rust-tools.nvim',
-  'antoinemadec/FixCursorHold.nvim',
+  -- 'antoinemadec/FixCursorHold.nvim',
   'nvim-treesitter/nvim-treesitter-context',
   'nvim-treesitter/nvim-treesitter-textobjects',
   'machakann/vim-highlightedyank',
@@ -343,6 +347,17 @@ require("lazy").setup({
       })
     end
   },
+  { "ojroques/nvim-bufdel" },
+  {
+    "j-hui/fidget.nvim",
+    opts = {
+      notification = {
+        window = {
+          winblend = 0,
+        }
+      }
+    },
+  },
   {
     'rcarriga/nvim-notify',
     lazy = true,
@@ -369,7 +384,7 @@ require("lazy").setup({
     opts = {
       disable_diagnostics = true
     }
-  }
+  },
 }, {
   lazy = false,
   version = nil
@@ -390,6 +405,11 @@ require('lsp-setup').setup({
     gt = 'vim.lsp.buf.type_definition',
   },
   on_attach = function(client, bufnr)
+    -- Check if the LSP server supports inlay hints
+    if client.server_capabilities.inlayHintProvider then
+      -- Enable inlay hints
+      vim.lsp.buf_request(bufnr, "textDocument/inlayHint", vim.lsp.util.make_range_params())
+    end
   end,
   capabilities = vim.lsp.protocol.make_client_capabilities(),
   servers = {
@@ -401,7 +421,24 @@ require('lsp-setup').setup({
     hls = {},
     jsonls = {},
     cssls = {},
+    clojure_lsp = {},
+    eslint = {
+      settings = {
+        workingDirectory = { mode = 'location' },
+      },
+    },
     tsserver = {
+      typescript = {
+        inlayHints = {
+          includeInlayEnumMemberValueHints = true,
+          includeInlayFunctionLikeReturnTypeHints = true,
+          includeInlayFunctionParameterTypeHints = true,
+          includeInlayParameterNameHints = "all", -- or "literals" or "none"
+          includeInlayParameterNameHintsWhenArgumentMatchesName = true,
+          includeInlayPropertyDeclarationTypeHints = true,
+          includeInlayVariableTypeHints = true,
+        },
+      },
       settings = {
         implicitProjectConfiguration = {
           checkJs = true
@@ -497,15 +534,15 @@ local sign = function(opts)
     numhl = ''
   })
 end
-sign({ name = 'DiagnosticSignError', text = '✖' })
+sign({ name = 'DiagnosticSignError', text = '' })
 sign({ name = 'DiagnosticSignWarn', text = '▲' })
-sign({ name = 'DiagnosticSignHint', text = '⚑' })
-sign({ name = 'DiagnosticSignInfo', text = '' })
+sign({ name = 'DiagnosticSignHint', text = '' })
+sign({ name = 'DiagnosticSignInfo', text = '' })
 
 -- disable virtaul text for lsp_lines
-vim.diagnostic.config({
-  virtual_text = false,
-})
+-- vim.diagnostic.config({
+--   virtual_text = false,
+-- })
 
 -- Auto commands
 vim.cmd [[
@@ -543,7 +580,7 @@ vim.lsp.handlers["textDocument/signatureHelp"] = vim.lsp.with(vim.lsp.handlers.s
 -- Keymaps
 local keymap = vim.api.nvim_set_keymap
 local opts = { noremap = true, silent = true }
-keymap("n", "<leader>o", "<cmd>Telescope find_files hidden=true<cr>", opts)
+keymap("n", "<leader>o", "<cmd>Telescope find_files<cr>", opts)
 keymap("n", "<leader>g", "<cmd>Telescope live_grep<cr>", opts)
 keymap("n", "<leader>t", "<cmd>Telescope buffers<cr>", opts)
 keymap("n", "<leader>f", "<cmd>lua vim.lsp.buf.format()<CR>", opts)
@@ -570,7 +607,7 @@ keymap('n', '[x', '<Plug>(git-conflict-next-conflict)', opts)
 -- tabs
 keymap('n', '<M-,>', '<Cmd>BufferLineCyclePrev<CR>', opts)
 keymap('n', '<M-.>', '<Cmd>BufferLineCycleNext<CR>', opts)
-keymap('n', '<M-q>', '<Cmd>BufferClose<CR>', opts)
+keymap('n', '<M-q>', '<Cmd>BufDel<CR>', opts)
 keymap('n', '<M-1>', '<Cmd>BufferLineGoToBuffer 1<CR>', opts)
 keymap('n', '<M-2>', '<Cmd>BufferLineGoToBuffer 2<CR>', opts)
 keymap('n', '<M-3>', '<Cmd>BufferLineGoToBuffer 3<CR>', opts)
@@ -589,3 +626,28 @@ keymap('n', '<A-Up>', ':MoveLine(-1)<CR>', opts)
 -- Visual-mode commands
 keymap('v', '<A-Down>', ':MoveBlock(1)<CR>', opts)
 keymap('v', '<A-Up>', ':MoveBlock(-1)<CR>', opts)
+
+-- Neovide options
+if vim.g.neovide then
+  vim.g.neovide_cursor_animation_length = 0.08
+  vim.g.neovide_padding_top = 50
+  vim.g.neovide_show_border = true
+  vim.g.neovide_unlink_border_highlights = false
+  vim.g.neovide_input_macos_alt_is_meta = true
+  vim.g.neovide_floating_shadow = false
+
+  -- shortcuts 
+  vim.keymap.set('n', '<D-s>', ':w<CR>') -- Save
+  vim.keymap.set('v', '<D-c>', '"+y') -- Copy
+  vim.keymap.set('n', '<D-v>', '"+P') -- Paste normal mode
+  vim.api.nvim_set_keymap('', '<D-v>', '+p<CR>', { noremap = true, silent = true})
+  vim.api.nvim_set_keymap('!', '<D-v>', '<C-R>+', { noremap = true, silent = true})
+  vim.api.nvim_set_keymap('t', '<D-v>', '<C-R>+', { noremap = true, silent = true})
+  vim.api.nvim_set_keymap('v', '<D-v>', '<C-R>+', { noremap = true, silent = true})
+
+  -- Close window shortcut
+  vim.api.nvim_set_keymap('n', '<D-w>', ':q<CR>', { noremap = true, silent = true })
+
+  -- New tab shortcut
+  vim.api.nvim_set_keymap('n', '<D-t>', ':enew<CR>', { noremap = true, silent = true })
+end
