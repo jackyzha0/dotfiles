@@ -39,6 +39,28 @@ if not vim.loop.fs_stat(lazypath) then
 end
 vim.opt.rtp:prepend(lazypath)
 
+colors = {
+  black = "#000000",
+  bg0 = "#171717",
+  bg1 = "#242b38",
+  bg2 = "#343e4f",
+  bg3 = "#363c51",
+  bg_d = "#13161c",
+  bg_blue = "#91E9EE",
+  bg_yellow = "#f0d197",
+  fg = "#dfdee0",
+  purple = "#8E7EB4",
+  green = "#20FFAF",
+  orange = "#db9351",
+  blue = "#0DEFE1",
+  yellow = "#f7c668",
+  cyan = "#07a39a",
+  red = "#F65C5C",
+  grey = "#546178",
+  light_grey = "#7d899f",
+  transparent = "NONE",
+}
+
 -- plugin setup
 require("lazy").setup({
   "nvim-tree/nvim-web-devicons",
@@ -57,32 +79,17 @@ require("lazy").setup({
           darker = false,
           background = false
         },
-        colors = {
-          black = "#000000",
-          bg0 = "#171717",
-          bg1 = "#2d3343",
-          bg2 = "#343e4f",
-          bg3 = "#363c51",
-          bg_d = "#1e242e",
-          bg_blue = "#91E9EE",
-          bg_yellow = "#f0d197",
-          fg = "#dfdee0",
-          purple = "#8E7EB4",
-          green = "#20FFAF",
-          orange = "#db9351",
-          blue = "#0DEFE1",
-          yellow = "#f7c668",
-          cyan = "#07a39a",
-          red = "#F65C5C",
-          grey = "#546178",
-          light_grey = "#7d899f",
-        },
+        colors = colors,
         highlights = {
-          FloatBorder = { bg = "NONE" },
-          NormalFloat = { bg = "NONE" },
-          GitSignsChange = { fg = "#f7c668" },
-          GitSignsChangeLn = { fg = "#f7c668" },
-          GitSignsChangeNr = { fg = "#f7c668" },
+          TelescopeNormal = { bg = colors.bg_d },
+          TelescopePromptBorder = { fg= colors.grey, bg = colors.bg_d },
+          TelescopeResultsBorder = { fg= colors.grey, bg = colors.bg_d },
+          TelescopePreviewBorder = { fg= colors.grey, bg = colors.bg_d },
+          TreesitterContext = { bg = colors.bg_d },
+          GitSignsChange = { fg = colors.yellow },
+          GitSignsChangeLn = { fg = colors.yellow },
+          GitSignsChangeNr = { fg = colors.yellow },
+          CopilotSuggestion = {fg = colors.grey }, 
         },
         lualine = {
           transparent = true
@@ -100,6 +107,12 @@ require("lazy").setup({
       require 'telescope'.setup {
         defaults = {
           file_ignore_patterns = { "node_modules/" },
+          -- borderchars = { ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ' },
+          borderchars = { '─', '│', '─', '│', '┌', '┐', '┘', '└' },
+          prompt_prefix = '❯ ',
+          layout_config = {
+            prompt_position = 'top',
+          },
         },
         extensions = {
           fzf = {
@@ -134,6 +147,9 @@ require("lazy").setup({
       "nvim-tree/nvim-web-devicons", -- optional dependency
     },
     opts = {
+      theme = {
+        normal = { bg = colors.bg_d },
+      },
       show_modified = true,
       symbols = {
         ellipsis = "..."
@@ -164,7 +180,6 @@ require("lazy").setup({
   "numToStr/prettierrc.nvim",
   {
     'akinsho/bufferline.nvim',
-    version = "v3.*",
     dependencies = 'nvim-tree/nvim-web-devicons',
     opts = {
       options = {
@@ -172,20 +187,20 @@ require("lazy").setup({
       },
       highlights = {
         duplicate_selected = {
-          bg = '#242b38'
+          bg = colors.bg1, 
         },
         modified_selected = {
-          bg = '#242b38'
+          bg = colors.bg1, 
         },
         close_button_selected = {
-          bg = '#242b38'
+          bg = colors.bg1, 
         },
         indicator_selected = {
-          bg = '#242b38'
+          bg = colors.bg1 
         },
         buffer_selected = {
           italic = false,
-          bg = '#242b38'
+          bg = colors.bg1
         }
       }
     }
@@ -253,8 +268,12 @@ require("lazy").setup({
     end
   },
   'simrat39/rust-tools.nvim',
-  -- 'antoinemadec/FixCursorHold.nvim',
-  'nvim-treesitter/nvim-treesitter-context',
+  {
+    'nvim-treesitter/nvim-treesitter-context',
+    opts = {
+      max_lines = 3,
+    }
+  },
   'nvim-treesitter/nvim-treesitter-textobjects',
   'machakann/vim-highlightedyank',
   {
@@ -385,6 +404,24 @@ require("lazy").setup({
       disable_diagnostics = true
     }
   },
+  {
+    'zbirenbaum/copilot.lua',
+    cmd = "Copilot",
+    event = "InsertEnter",
+    opts = {
+      panel = {
+        enabled = false
+      },
+      suggestion = {
+        auto_trigger = true,
+        keymap = {
+          accept = "<M-Tab>",
+          next = "<M-]>",
+          prev = "<M-[>",
+        }
+      }
+    }
+  }
 }, {
   lazy = false,
   version = nil
@@ -392,7 +429,6 @@ require("lazy").setup({
 
 -- borders and colours
 local border_opts = {
-  border = "rounded",
 }
 
 -- LSP
@@ -493,14 +529,14 @@ cmp.setup({
     end
   },
   sources = {
-    { name = 'path',     priority = 250 },
     { name = 'nvim_lsp', keyword_length = 3, priority = 1000 },
     { name = 'buffer',   keyword_length = 3, priority = 500 },
     { name = 'luasnip',  keyword_length = 2, priority = 250 },
+    { name = 'path',     priority = 250 },
   },
   window = {
-    completion = cmp.config.window.bordered(border_opts),
-    documentation = cmp.config.window.bordered(border_opts),
+    -- completion = cmp.config.window.bordered(border_opts),
+    -- documentation = cmp.config.window.bordered(border_opts),
   },
   formatting = {
     format = lspkind.cmp_format({
@@ -542,6 +578,7 @@ sign({ name = 'DiagnosticSignInfo', text = '' })
 -- disable virtaul text for lsp_lines
 vim.diagnostic.config({
   virtual_text = false,
+  float = border_opts
 })
 
 -- Auto commands
@@ -553,27 +590,6 @@ vim.cmd [[
   augroup END
 ]]
 
-vim.cmd [[
-  augroup diagnostics
-    autocmd!
-      autocmd CursorHoldI * silent! lua vim.lsp.buf.signature_help()
-    augroup END
-]]
-
-vim.api.nvim_create_autocmd("CursorHold", {
-  buffer = bufnr,
-  callback = function()
-    local opts = {
-      focusable = false,
-      close_events = { "BufLeave", "CursorMoved", "InsertEnter", "FocusLost" },
-      border = "rounded",
-      source = 'always',
-      prefix = '',
-      scope = 'cursor',
-    }
-    vim.diagnostic.open_float(nil, opts)
-  end
-})
 vim.lsp.handlers["textDocument/hover"] = vim.lsp.with(vim.lsp.handlers.hover, border_opts)
 vim.lsp.handlers["textDocument/signatureHelp"] = vim.lsp.with(vim.lsp.handlers.signature_help, border_opts)
 
@@ -585,8 +601,8 @@ keymap("n", "<leader>g", "<cmd>Telescope live_grep<cr>", opts)
 keymap("n", "<leader>t", "<cmd>Telescope buffers<cr>", opts)
 keymap("n", "<leader>f", "<cmd>lua vim.lsp.buf.format()<CR>", opts)
 keymap("n", "<leader>c", "<cmd>CodeActionMenu<CR>", opts)
+keymap("n", '<leader>x', "<cmd>lua vim.diagnostic.open_float()<CR>", opts)
 keymap("i", "<C-c>", "<Esc>", opts)
-keymap("n", "f", ":HopChar1<cr>", opts)
 keymap("n", "<leader>m", ":DiffviewOpen<CR>", opts)
 keymap('n', '<C-/>', '<CMD>lua require("Comment.api").toggle.linewise.current()<CR>', {})
 keymap('x', '<C-/>', '<ESC><CMD>lua require("Comment.api").toggle.linewise(vim.fn.visualmode())<CR>', {})
@@ -631,9 +647,9 @@ keymap('v', '<A-Up>', ':MoveBlock(-1)<CR>', opts)
 if vim.g.neovide then
   vim.g.neovide_show_border = true
   vim.g.neovide_cursor_animation_length = 0.08
-  vim.g.neovide_padding_top = 0
+  vim.g.neovide_padding_top = 5
   vim.g.neovide_input_macos_alt_is_meta = true
-  vim.g.neovide_floating_shadow = false
+  vim.g.neovide_floating_shadow = false;
   vim.g.neovide_remember_window_size = false
 
   -- shortcuts 
