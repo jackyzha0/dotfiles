@@ -2,7 +2,13 @@ local vim = vim
 local wo = vim.wo
 local g = vim.g
 local o = vim.o
+-- use nvim-tree instead
+vim.g.loaded_netrw = 1
+vim.g.loaded_netrwPlugin = 1
 vim.opt.termguicolors = true
+
+-- disable swap
+vim.opt.swapfile = false
 
 -- Vim options
 vim.opt.smartcase = true
@@ -110,6 +116,7 @@ require("lazy").setup({
           -- borderchars = { ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ' },
           borderchars = { '─', '│', '─', '│', '┌', '┐', '┘', '└' },
           prompt_prefix = '❯ ',
+          sorting_strategy = "ascending",
           layout_config = {
             prompt_position = 'top',
           },
@@ -136,6 +143,25 @@ require("lazy").setup({
         }
       }
       require('telescope').load_extension('fzf')
+    end
+  },
+  {
+    'nvim-tree/nvim-tree.lua',
+    dependencies = { 'nvim-tree/nvim-web-devicons' },
+    config = function()
+      require('nvim-tree').setup({
+        filters = { custom = { "^.git$" } }
+      })
+
+      local nt_api = require('nvim-tree.api')
+
+      nt_api.events.subscribe(nt_api.events.Event.TreeOpen, function()
+        local tree_winid = nt_api.tree.winid()
+
+        if tree_winid ~= nil then
+          vim.api.nvim_set_option_value('statusline', '%t', {win = tree_winid})
+        end
+      end)
     end
   },
   'jghauser/mkdir.nvim',
@@ -207,12 +233,13 @@ require("lazy").setup({
   },
   {
     'lukas-reineke/indent-blankline.nvim',
+    version = "v3.5.0",
     main = "ibl",
     opts = {
       indent = {
         char = "▏"
       }
-    }
+    },
   },
   {
     'junnplus/lsp-setup.nvim',
@@ -423,7 +450,7 @@ require("lazy").setup({
     }
   }
 }, {
-  lazy = false,
+  lazy = true,
   version = nil
 })
 
@@ -463,7 +490,7 @@ require('lsp-setup').setup({
         workingDirectory = { mode = 'location' },
       },
     },
-    tsserver = {
+    ts_ls = {
       typescript = {
         inlayHints = {
           includeInlayEnumMemberValueHints = true,
@@ -599,6 +626,7 @@ local opts = { noremap = true, silent = true }
 keymap("n", "<leader>o", "<cmd>Telescope find_files<cr>", opts)
 keymap("n", "<leader>g", "<cmd>Telescope live_grep<cr>", opts)
 keymap("n", "<leader>t", "<cmd>Telescope buffers<cr>", opts)
+keymap("n", "<leader>p", "<cmd>NvimTreeToggle<cr>", opts)
 keymap("n", "<leader>f", "<cmd>lua vim.lsp.buf.format()<CR>", opts)
 keymap("n", "<leader>c", "<cmd>CodeActionMenu<CR>", opts)
 keymap("n", '<leader>x', "<cmd>lua vim.diagnostic.open_float()<CR>", opts)
@@ -648,7 +676,7 @@ if vim.g.neovide then
   vim.g.neovide_show_border = true
   vim.g.neovide_cursor_animation_length = 0.08
   vim.g.neovide_padding_top = 5
-  vim.g.neovide_input_macos_alt_is_meta = true
+  vim.g.neovide_input_macos_option_key_is_meta = 'only_left'
   vim.g.neovide_floating_shadow = false;
   vim.g.neovide_remember_window_size = false
 
@@ -663,3 +691,4 @@ if vim.g.neovide then
   vim.api.nvim_set_keymap('n', '<D-w>', ':q<CR>', { noremap = true, silent = true })
   vim.api.nvim_set_keymap('n', '<D-t>', ':enew<CR>', { noremap = true, silent = true })
 end
+
