@@ -203,7 +203,7 @@ require("lazy").setup({
       }
     }
   },
-  "numToStr/prettierrc.nvim",
+  "MunifTanjim/prettier.nvim",
   {
     'akinsho/bufferline.nvim',
     dependencies = 'nvim-tree/nvim-web-devicons',
