@@ -439,6 +439,7 @@ require("lazy").setup({
       panel = {
         enabled = false
       },
+      copilot_node_command = 'node',
       suggestion = {
         auto_trigger = true,
         keymap = {
