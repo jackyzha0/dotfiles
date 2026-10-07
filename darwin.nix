@@ -28,6 +28,16 @@
     rectangle
   ];
 
+  # weekly gc (Determinate Nix owns nix.conf, so nix.gc isn't available)
+  launchd.daemons.nix-gc = {
+    command = "/nix/var/nix/profiles/default/bin/nix-collect-garbage --delete-older-than 14d";
+    serviceConfig = {
+      StartCalendarInterval = [{ Weekday = 0; Hour = 3; Minute = 0; }];
+      StandardOutPath = "/var/log/nix-gc.log";
+      StandardErrorPath = "/var/log/nix-gc.log";
+    };
+  };
+
   fonts.packages = [ pkgs.nerd-fonts.jetbrains-mono ];
 
   # touch id for sudo (also works inside tmux-less kitty)

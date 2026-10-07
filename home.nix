@@ -7,7 +7,7 @@
 
   home.packages = with pkgs; [
     # shell ergonomics
-    eza ripgrep fd bat jq procs httpstat
+    eza ripgrep fd jq procs httpstat
     diff-so-fancy
     fnm
     # editor
@@ -56,11 +56,10 @@
     shellAliases = {
       v = "nvim";
       chrome = "open -a 'Google Chrome'";
-      ls = "eza -lahF";
-      l = "eza -lahF";
+      l = "eza -lahF"; # no `ls` override: keeps ls/cat stock so agents aren't confused
       ll = "eza -lahF";
       headers = "httpstat";
-      procs = "procs --watch --sortd cpu";
+      pw = "procs --watch --sortd cpu"; # not named `procs`: that would hang agents
       save = "git add . && git commit -m";
       rebuild = "sudo darwin-rebuild switch --flake ~/dotfiles";
       vm = "ssh jzhao-vm-with-ports";
@@ -109,7 +108,8 @@
       # node via fnm (repo work gets its node from nix/direnv, which prepends later)
       eval "$(fnm env --use-on-cd --shell zsh)"
 
-      [[ -d ~/projects ]] && cd ~/projects
+      # only from $HOME: never yank a shell that was started inside a project
+      [[ $PWD == $HOME && -d ~/projects ]] && cd ~/projects
     '';
   };
 
@@ -172,6 +172,22 @@
       diff-so-fancy.markEmptyLines = false;
     };
     ignores = [ ".DS_Store" ".direnv" ];
+    # needs ~/.ssh/id_ed25519 to exist (see README) or commits will fail
+    signing = {
+      format = "ssh";
+      key = "~/.ssh/id_ed25519.pub";
+      signByDefault = true;
+    };
+  };
+
+  programs.ssh = {
+    enable = true;
+    enableDefaultConfig = false;
+    settings."*" = {
+      AddKeysToAgent = "yes";
+      IgnoreUnknown = "UseKeychain";
+      UseKeychain = "yes"; # passphrase lives in the macOS keychain
+    };
   };
 
   # ---------------------------------------------------------------- kitty
