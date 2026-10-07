@@ -64,10 +64,12 @@
       persistent-apps = [
         # Finder is always first and can't be listed
         "/Applications/Nix Apps/Google Chrome.app"
+        "/Applications/Amie.app" # installed manually, not via nix
         "/Applications/Claude.app" # installed manually, not via nix
         "/Applications/Nix Apps/kitty.app"
         "/Applications/Nix Apps/Spotify.app"
         "/System/Applications/Messages.app"
+        "/System/Applications/Mail.app"
       ];
     };
     finder = {
