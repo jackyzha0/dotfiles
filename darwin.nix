@@ -69,6 +69,7 @@
         "/Applications/Claude.app" # installed manually, not via nix
         "/Applications/Nix Apps/Ghostty.app"
         "/Applications/Nix Apps/Spotify.app"
+        "/Applications/Steam.app" # installed manually; nixpkgs has no darwin build
         "/System/Applications/Messages.app"
       ];
     };

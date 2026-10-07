@@ -14,6 +14,12 @@
   };
 
   outputs = { nixpkgs, nix-darwin, home-manager, ... }: {
+    # per-project dev shell: `nix flake init -t ~/dotfiles && direnv allow`
+    templates.default = {
+      path = ./templates/dev;
+      description = "direnv + flake dev shell";
+    };
+
     # rebuild with: darwin-rebuild switch --flake ~/dotfiles   (alias: `rebuild`)
     darwinConfigurations."jzhao-mbp" = nix-darwin.lib.darwinSystem {
       system = "aarch64-darwin";

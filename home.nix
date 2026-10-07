@@ -9,10 +9,15 @@
     # shell ergonomics
     eza ripgrep fd jq procs httpstat
     diff-so-fancy
-    fnm
+    # toolchains: global defaults. python comes from uv (`uv python install`), rust from
+    # rustup (`rustup default stable`), node from nixpkgs; projects override via flake + direnv
+    nodejs_24
+    uv
+    rustup
+    pnpm
+    go
     # editor
     neovim
-    nodejs # for nvim LSPs / mason; per-repo node still comes from direnv
     gnumake gcc # telescope-fzf-native build
   ];
 
@@ -20,8 +25,9 @@
     EDITOR = "nvim";
     VISUAL = "nvim";
     GOPATH = "$HOME/go";
+    UV_PYTHON_PREFERENCE = "only-managed"; # never pick up a nix/system python by accident
   };
-  home.sessionPath = [ "$HOME/go/bin" "$HOME/.local/bin" ];
+  home.sessionPath = [ "$HOME/go/bin" "$HOME/.local/bin" "$HOME/.cargo/bin" ];
 
   programs.home-manager.enable = true;
 
@@ -106,9 +112,6 @@
       bindkey '^[[1;5D' backward-word
       bindkey '^[[1;3C' forward-word
       bindkey '^[[1;3D' backward-word
-
-      # node via fnm (repo work gets its node from nix/direnv, which prepends later)
-      eval "$(fnm env --use-on-cd --shell zsh)"
 
       # only from $HOME: never yank a shell that was started inside a project
       [[ $PWD == $HOME && -d ~/projects ]] && cd ~/projects
