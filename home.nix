@@ -25,6 +25,8 @@
 
   programs.home-manager.enable = true;
 
+  home.file.".hushlogin".text = ""; # no "Last login" banner
+
   # ---------------------------------------------------------------- zsh
   programs.zsh = {
     enable = true;
@@ -190,54 +192,42 @@
     };
   };
 
-  # ---------------------------------------------------------------- kitty
-  # installed system-wide in darwin.nix; home-manager only writes the config
-  programs.kitty = {
+  # ---------------------------------------------------------------- ghostty
+  # installed system-wide in darwin.nix (ghostty-bin); home-manager only writes the config
+  programs.ghostty = {
     enable = true;
-    package = pkgs.emptyDirectory;
-    font = {
-      name = "JetBrainsMono Nerd Font Mono";
-      size = 15;
-    };
-    shellIntegration.enableZshIntegration = true;
-    keybindings = lib.listToAttrs (map (n: {
-      name = "cmd+${toString n}";
-      value = "goto_tab ${toString n}";
-    }) (lib.range 1 9));
+    package = null;
+    installBatSyntax = false;
     settings = {
-      cursor_shape = "block";
-      scrollback_lines = 3000;
-      url_style = "straight";
-      enable_audio_bell = "no";
-      window_padding_width = "0 12"; # vertical horizontal
-      confirm_os_window_close = 0;
-      tab_bar_style = "powerline";
-      tab_powerline_style = "slanted";
-      editor = "nvim";
-      startup_session = "~/.config/kitty/startup.session";
-      macos_option_as_alt = "left";
-      macos_quit_when_last_window_closed = "no";
-      macos_titlebar_color = "#000000";
+      font-family = "JetBrainsMono Nerd Font Mono";
+      font-size = 15;
+      cursor-style = "bar";
+      adjust-cursor-thickness = 3;
+      shell-integration-features = "no-cursor"; # integration otherwise forces a bar at the prompt
+      window-padding-x = 12;
+      window-padding-y = 0;
+      confirm-close-surface = false;
+      macos-option-as-alt = "left";
+      macos-titlebar-style = "transparent"; # titlebar takes the background color
+      quit-after-last-window-closed = false;
 
-      background = "#000000";
-      foreground = "#d9d7ce";
-      cursor = "#20FFAF";
-      selection_background = "#343f4c";
-      selection_foreground = "#212733";
-      color0 = "#191e2a";  color8 = "#686868";
-      color1 = "#F65C5C";  color9 = "#F85E5E";
-      color2 = "#20ffaf";  color10 = "#5bffc4";
-      color3 = "#fad07b";  color11 = "#ffd580";
-      color4 = "#00dbce";  color12 = "#0defe1";
-      color5 = "#c4b2f0";  color13 = "#c4b2f0";
-      color6 = "#91e9ee";  color14 = "#c5fffb";
-      color7 = "#c7c7c7";  color15 = "#ffffff";
+      background = "000000";
+      foreground = "d9d7ce";
+      cursor-color = "20ffaf";
+      selection-background = "343f4c";
+      selection-foreground = "212733";
+      palette = [
+        "0=#191e2a" "8=#686868"
+        "1=#F65C5C" "9=#F85E5E"
+        "2=#20ffaf" "10=#5bffc4"
+        "3=#fad07b" "11=#ffd580"
+        "4=#00dbce" "12=#0defe1"
+        "5=#c4b2f0" "13=#c4b2f0"
+        "6=#91e9ee" "14=#c5fffb"
+        "7=#c7c7c7" "15=#ffffff"
+      ];
     };
   };
-  xdg.configFile."kitty/startup.session".text = "cd ~/projects\n";
-  # custom app icon (macOS Terminal's); kitty picks this up on launch
-  home.file.".hushlogin".text = ""; # no "Last login" banner
-  xdg.configFile."kitty/kitty.app.png".source = ./kitty/kitty.app.png;
 
   # ---------------------------------------------------------------- nvim
   # lazy.nvim bootstraps itself; lazy-lock.json stays writable so :Lazy update works

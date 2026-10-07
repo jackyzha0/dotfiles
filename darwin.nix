@@ -24,7 +24,7 @@
   environment.systemPackages = with pkgs; [
     google-chrome
     spotify
-    kitty
+    ghostty-bin
     rectangle
   ];
 
@@ -40,7 +40,7 @@
 
   fonts.packages = [ pkgs.nerd-fonts.jetbrains-mono ];
 
-  # touch id for sudo (also works inside tmux-less kitty)
+  # touch id for sudo 
   security.pam.services.sudo_local.touchIdAuth = true;
 
   system.defaults = {
@@ -64,12 +64,12 @@
       persistent-apps = [
         # Finder is always first and can't be listed
         "/Applications/Nix Apps/Google Chrome.app"
+        "/System/Applications/Mail.app"
         "/Applications/Amie.app" # installed manually, not via nix
         "/Applications/Claude.app" # installed manually, not via nix
-        "/Applications/Nix Apps/kitty.app"
+        "/Applications/Nix Apps/Ghostty.app"
         "/Applications/Nix Apps/Spotify.app"
         "/System/Applications/Messages.app"
-        "/System/Applications/Mail.app"
       ];
     };
     finder = {
@@ -85,6 +85,10 @@
     screencapture.location = "~/Downloads";
 
     CustomUserPreferences."com.knollsoft.Rectangle".launchOnLogin = true;
+
+    # Mail shortcuts (e archive, r reply, a reply all, f forward, c compose) were written once
+    # with: defaults write com.apple.mail NSUserKeyEquivalents -dict-add "Archive" "e" ...
+    # (needs Full Disk Access for the terminal; not kept in nix since it breaks rebuilds without it)
 
     # cmd+shift+4 copies the selection to the clipboard instead of saving a file.
     # 30 = save selection to file, 31 = copy selection to clipboard.
