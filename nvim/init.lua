@@ -2,6 +2,13 @@ local vim = vim
 local wo = vim.wo
 local g = vim.g
 local o = vim.o
+
+-- several plugins (bufferline, lualine, prettier.nvim, lspconfig) still call the deprecated
+-- vim.tbl_flatten; provide it without the startup warning
+vim.tbl_flatten = function(t)
+  return vim.iter(t):flatten(math.huge):totable()
+end
+
 -- use nvim-tree instead
 vim.g.loaded_netrw = 1
 vim.g.loaded_netrwPlugin = 1
@@ -255,78 +262,71 @@ require("lazy").setup({
       require("lsp_lines").setup()
     end,
   },
-  'windwp/nvim-ts-autotag',
   {
+    'windwp/nvim-ts-autotag',
+    config = function()
+      require('nvim-ts-autotag').setup()
+    end
+  },
+  {
+    -- `main` branch: rewritten API (no more nvim-treesitter.configs); needs the tree-sitter CLI
     'nvim-treesitter/nvim-treesitter',
+    branch = 'main',
     lazy = false,
     priority = 2000,
     build = ':TSUpdate',
     config = function()
-      require('nvim-treesitter.configs').setup {
-        auto_install = true,
-        autotag = { enable = true },
-        highlight = { enable = true },
-        textobjects = {
-          move = {
-            enable = true,
-            set_jumps = true,
-            goto_previous_start = {
-              ["[["] = "@parameter.inner"
-            },
-            goto_next_start = {
-              ["]]"] = "@parameter.inner"
-            }
-          },
-          select = {
-            enable = true,
-            lookahead = true,
-            keymaps = {
-              ["iq"] = "@parameter.inner",
-              ["aq"] = "@parameter.outer",
-              ["ib"] = "@block.inner",
-              ["ab"] = "@block.outer",
-            }
-          }
-        },
-        disable = function(lang, bufnr)
-          return vim.api.nvim_buf_line_count(bufnr) > 10000
-        end
-      }
+      local ts = require('nvim-treesitter')
+      ts.setup({})
+      ts.install({
+        'lua', 'vim', 'vimdoc', 'query', 'bash', 'json', 'yaml', 'toml', 'markdown', 'markdown_inline',
+        'javascript', 'typescript', 'tsx', 'html', 'css', 'python', 'rust', 'go', 'c', 'cpp',
+      })
+      -- highlight + indent per filetype, skipping huge files
+      vim.api.nvim_create_autocmd('FileType', {
+        callback = function(args)
+          if vim.api.nvim_buf_line_count(args.buf) > 10000 then return end
+          local lang = vim.treesitter.language.get_lang(args.match)
+          if lang and pcall(vim.treesitter.start, args.buf, lang) then
+            vim.bo[args.buf].indentexpr = "v:lua.require'nvim-treesitter'.indentexpr()"
+          end
+        end,
+      })
     end
   },
-  'simrat39/rust-tools.nvim',
   {
     'nvim-treesitter/nvim-treesitter-context',
     opts = {
       max_lines = 3,
     }
   },
-  'nvim-treesitter/nvim-treesitter-textobjects',
-  'machakann/vim-highlightedyank',
   {
-    'mfussenegger/nvim-ts-hint-textobject',
+    'nvim-treesitter/nvim-treesitter-textobjects',
+    branch = 'main',
     config = function()
-      require 'nvim-treesitter.configs'.setup {
-        textobjects = {
-          select = {
-            enable = true,
-            lookahead = true,
-            keymaps = {
-              ["af"] = "@function.outer",
-              ["if"] = "@function.inner",
-              ["ac"] = "@class.outer",
-              ["ic"] = "@class.inner",
-            },
-            selection_modes = {
-              ['@parameter.outer'] = 'v', -- charwise
-              ['@function.outer'] = 'V',  -- linewise
-              ['@class.outer'] = '<c-v>', -- blockwise
-            },
-          },
-        },
+      require('nvim-treesitter-textobjects').setup({
+        select = { lookahead = true },
+        move = { set_jumps = true },
+      })
+      local select = require('nvim-treesitter-textobjects.select')
+      local objects = {
+        iq = '@parameter.inner', aq = '@parameter.outer',
+        ib = '@block.inner', ab = '@block.outer',
+        af = '@function.outer', ['if'] = '@function.inner',
+        ac = '@class.outer', ic = '@class.inner',
       }
+      for key, query in pairs(objects) do
+        vim.keymap.set({ 'x', 'o' }, key, function()
+          select.select_textobject(query, 'textobjects')
+        end)
+      end
+      local move = require('nvim-treesitter-textobjects.move')
+      vim.keymap.set({ 'n', 'x', 'o' }, ']]', function() move.goto_next_start('@parameter.inner', 'textobjects') end)
+      vim.keymap.set({ 'n', 'x', 'o' }, '[[', function() move.goto_previous_start('@parameter.inner', 'textobjects') end)
     end
   },
+  'machakann/vim-highlightedyank',
+  'mfussenegger/nvim-ts-hint-textobject',
   {
     'lewis6991/satellite.nvim',
     opts = {
@@ -469,10 +469,8 @@ require('lsp-setup').setup({
     gt = 'vim.lsp.buf.type_definition',
   },
   on_attach = function(client, bufnr)
-    -- Check if the LSP server supports inlay hints
     if client.server_capabilities.inlayHintProvider then
-      -- Enable inlay hints
-      vim.lsp.buf_request(bufnr, "textDocument/inlayHint", vim.lsp.util.make_range_params())
+      vim.lsp.inlay_hint.enable(true, { bufnr = bufnr })
     end
   end,
   capabilities = vim.lsp.protocol.make_client_capabilities(),
@@ -513,33 +511,18 @@ require('lsp-setup').setup({
     marksman = {},
     julials = {},
     jdtls = {},
-    rust_analyzer = require('rust-tools').setup({
-      tools = {
-        inlay_hints = {
-          show_parameter_hints = true,
-          other_hints_prefix = ":: ",
-          only_current_line = true,
-        }
-      },
-      server = {
-        settings = {
-          ['rust-analyzer'] = {
-            cargo = {
-              loadOutDirsFromCheck = true,
-              buildScripts = {
-                enable = true
-              }
-            },
-            checkOnSave = {
-              command = "clippy",
-            },
-            procMacro = {
-              enable = true,
-            },
+    rust_analyzer = {
+      settings = {
+        ['rust-analyzer'] = {
+          cargo = {
+            loadOutDirsFromCheck = true,
+            buildScripts = { enable = true },
           },
+          checkOnSave = { command = "clippy" },
+          procMacro = { enable = true },
         },
       },
-    })
+    },
   },
 })
 
@@ -617,9 +600,6 @@ vim.cmd [[
     autocmd BufLeave,FocusLost,InsertEnter,WinLeave   * if &nu                  | set nornu | endif
   augroup END
 ]]
-
-vim.lsp.handlers["textDocument/hover"] = vim.lsp.with(vim.lsp.handlers.hover, border_opts)
-vim.lsp.handlers["textDocument/signatureHelp"] = vim.lsp.with(vim.lsp.handlers.signature_help, border_opts)
 
 -- Keymaps
 local keymap = vim.api.nvim_set_keymap

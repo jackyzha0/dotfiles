@@ -19,6 +19,7 @@
     # editor
     neovim
     gnumake gcc # telescope-fzf-native build
+    tree-sitter # nvim-treesitter (main branch) compiles parsers with the CLI
   ];
 
   home.sessionVariables = {

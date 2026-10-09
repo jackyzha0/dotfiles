@@ -26,6 +26,9 @@
     spotify
     ghostty-bin
     rectangle
+    obsidian
+    # discord: nixpkgs' darwin build modifies the bundle and breaks its signature
+    # ("damaged and can't be opened"); install it from discord.com instead
   ];
 
   # weekly gc (Determinate Nix owns nix.conf, so nix.gc isn't available)
@@ -65,13 +68,12 @@
         # Finder is always first and can't be listed
         "/Applications/Nix Apps/Google Chrome.app"
         "/System/Applications/Mail.app"
-        "/Applications/Amie.app" # installed manually, not via nix
         "/Applications/Claude.app" # installed manually, not via nix
+        "/Applications/Amie.app" # installed manually, not via nix
         "/Applications/Nix Apps/Ghostty.app"
         "/Applications/Nix Apps/Spotify.app"
-        "/Applications/Steam.app" # installed manually; nixpkgs has no darwin build
-        "/System/Applications/Messages.app"
-      ];
+        "/Applications/Nix Apps/Obsidian.app"
+        "/System/Applications/Messages.app"      ];
     };
     finder = {
       AppleShowAllExtensions = true;
@@ -87,9 +89,10 @@
 
     CustomUserPreferences."com.knollsoft.Rectangle".launchOnLogin = true;
 
-    # Mail shortcuts (e archive, r reply, a reply all, f forward, c compose) were written once
-    # with: defaults write com.apple.mail NSUserKeyEquivalents -dict-add "Archive" "e" ...
-    # (needs Full Disk Access for the terminal; not kept in nix since it breaks rebuilds without it)
+    # Mail shortcuts are set by hand in System Settings > Keyboard > App Shortcuts, not here:
+    # ctrl-e archive, ctrl-r reply, ctrl-a reply all, ctrl-f forward, ctrl-c new message.
+    # (plain letters fight the message list's type-to-select; writing Mail's prefs from nix
+    # needs Full Disk Access for the terminal and aborts rebuilds without it)
 
     # cmd+shift+4 copies the selection to the clipboard instead of saving a file.
     # 30 = save selection to file, 31 = copy selection to clipboard.
